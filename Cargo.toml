@@ -1,0 +1,16 @@
+[package]
+name = "siege-config-tracker"
+version = "0.1.0"
+edition = "2024"
+
+
+[workspace]
+resolver = "3"
+members = ["crates/adapter-local", "crates/tracker-core"]
+
+
+[dependencies]
+tracker-core = { path = "crates/tracker-core" }
+adapter-local = { path = "crates/adapter-local" }
+log = { version = "0.4.29", features = ["max_level_info", "release_max_level_warn"] }
+env_logger = "0.11.10"
