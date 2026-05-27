@@ -17,8 +17,8 @@ jobs:
       - uses: dtolnay/rust-toolchain@e97e2d8cc328f1b50210efc529dca0028893a2d9 # stable
         with:
           toolchain: stable
-          targets: x86_64-pc-windows-gnu
       - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+      - run: rustup target add x86_64-pc-windows-gnu
       - run: sudo apt-get install -y gcc-mingw-w64-x86-64
       - run: cargo build --release --target x86_64-pc-windows-gnu
       - uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
