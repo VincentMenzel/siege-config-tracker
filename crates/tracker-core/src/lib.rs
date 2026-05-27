@@ -23,23 +23,22 @@ pub fn start_watcher(history_adapter: impl HistoryAdapter) -> Result<()> {
 }
 
 fn on_modified<H: HistoryAdapter>(path: &Path, history_adapter: &H) -> Result<()> {
-    info!("Ini change deteced: '{}", path.display());
+    info!("Start Processing Filechange '{}", path.display());
 
     info!("Parsing new ini file");
-    let settings = parse_path(path)?;
-
-    let previous = history_adapter.get_previous_snapshot();
+    let current_settings = parse_path(path)?;
+    let previous_settings = history_adapter.get_previous_snapshot();
 
     info!("Saving Snapshot");
-    history_adapter.save_snapshot(&settings)?;
+    history_adapter.save_snapshot(&current_settings)?;
 
-    if let Some(previous) = previous {
-        info!("Preview diff:");
-        diff::diff_settings(&settings, &previous)?;
+    if let Some(previous) = previous_settings {
+        info!("Preview diff");
+        diff::diff_settings(&current_settings, &previous)?;
     } else {
         info!("No previous snapshot found");
     }
 
-    info!("Event Complete");
+    info!("End Processing Filechange");
     Ok(())
 }
