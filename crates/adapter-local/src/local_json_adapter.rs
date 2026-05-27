@@ -36,8 +36,20 @@ impl LocalJsonStorage {
             .duration_since(UNIX_EPOCH)
             .ok()
             .map(|d| d.as_secs())
-            .map(|ts| format!("{}.json", ts))
-            .map(PathBuf::from)
+            .map(|ts| self.get_save_file_for_ts(ts))
+    }
+
+    fn get_save_file_for_ts(&self, ts: u64) -> PathBuf {
+        PathBuf::from(format!("{}.json", ts))
+    }
+
+    fn parse_timestamp_from_filename(&self, filename: OsString) -> Result<u64> {
+        Path::new(&filename)
+            .file_stem()
+            .and_then(OsStr::to_str)
+            .context("Failed to get filename stem")?
+            .parse::<u64>()
+            .context("Failed to parse timestamp from filename")
     }
 }
 
@@ -101,6 +113,16 @@ impl HistoryAdapter for LocalJsonStorage {
     }
 
     fn get_previous_snapshot(&self) -> Option<SiegeSettings> {
-        self.list_snapshots().ok()?.pop()
+        let snapshot_dir = self.get_save_file_dir()?;
+
+        let mut timestamps: Vec<u64> = fs::read_dir(snapshot_dir)
+            .ok()?
+            .flatten()
+            .filter_map(|entry| self.parse_timestamp_from_filename(entry.file_name()).ok())
+            .collect();
+        timestamps.sort_unstable();
+
+        let latest = timestamps.pop()?.to_string();
+        self.get_snapshot(&latest).ok()
     }
 }
