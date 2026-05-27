@@ -1,0 +1,4 @@
+[workspace]
+shared-version = true
+tag-message = "Release {{version}}"
+pre-release-commit-message = "chore: release v{{version}}"
