@@ -1,6 +1,7 @@
 use std::{
+    ffi::{OsStr, OsString},
     fs::{self, File},
-    path::PathBuf,
+    path::{Path, PathBuf},
     time::{SystemTime, UNIX_EPOCH},
 };
 
@@ -15,7 +16,7 @@ impl LocalJsonStorage {
     const APPLICATION_NAME: &'static str = "siege-config-tracker";
 
     pub fn new() -> Self {
-        return LocalJsonStorage {};
+        LocalJsonStorage {}
     }
 
     fn get_save_file_dir(&self) -> Option<PathBuf> {

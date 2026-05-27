@@ -13,7 +13,11 @@ pub(crate) mod watcher;
 
 pub fn start_watcher(history_adapter: impl HistoryAdapter) -> Result<()> {
     let r6_dir = get_r6_dir()?;
-    watcher::watch_directory(&r6_dir, move |path| on_modified(path, &history_adapter))?;
+    let _handle =
+        watcher::watch_directory(&r6_dir, move |path| on_modified(path, &history_adapter))?;
+
+    info!("Watcher running. Press Ctrl+C to stop.");
+    std::thread::park();
 
     Ok(())
 }
@@ -24,12 +28,16 @@ fn on_modified<H: HistoryAdapter>(path: &Path, history_adapter: &H) -> Result<()
     info!("Parsing new ini file");
     let settings = parse_path(path)?;
 
+    let previous = history_adapter.get_previous_snapshot();
+
     info!("Saving Snapshot");
     history_adapter.save_snapshot(&settings)?;
 
-    info!("Check for div preview");
-    if let Some(previous) = history_adapter.get_previous_snapshot() {
+    if let Some(previous) = previous {
+        info!("Preview diff:");
         diff::diff_settings(&settings, &previous)?;
+    } else {
+        info!("No previous snapshot found");
     }
 
     info!("Event Complete");
