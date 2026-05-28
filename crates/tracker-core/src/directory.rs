@@ -3,9 +3,9 @@ use std::path::PathBuf;
 use anyhow::{Context, Ok, Result, anyhow};
 use directories::UserDirs;
 
-pub(crate) const MY_GAMES_DIR: &'static str = "My Games";
-pub(crate) const SIEGE_DIR: &'static str = "Rainbow Six - Siege";
 pub(crate) const GAME_SETTINGS_FILE: &'static str = "GameSettings.ini";
+const MY_GAMES_DIR: &'static str = "My Games";
+const SIEGE_DIR: &'static str = "Rainbow Six - Siege";
 
 pub fn get_r6_dir() -> Result<PathBuf> {
     let user_dirs = UserDirs::new().context("Failed to get user_dirs")?;

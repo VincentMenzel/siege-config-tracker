@@ -13,7 +13,6 @@ use anyhow::anyhow;
 pub use audio::AudioSection;
 pub use display::{DisplaySection, DisplaySettingsSection, HardwareInfoSection};
 pub use input::InputSection;
-use log::warn;
 pub use misc::{
     AccessibilitySection, GameplaySection, GeneralSection, OnlineSection, ReadOnlySection,
 };
@@ -56,48 +55,8 @@ pub fn parse_path(path: &Path) -> Result<SiegeSettings> {
     return parse_ini_string(&normalized);
 }
 
-fn diagnose_ini_content(content: &str) {
-    let mut section = String::new();
-    for line in content.lines() {
-        let line = line.trim();
-        if line.starts_with(';') || line.is_empty() {
-            continue;
-        }
-        if line.starts_with('[') {
-            if let Some(end) = line.find(']') {
-                section = line[1..end].to_string();
-            }
-            continue;
-        }
-        if let Some((key, value)) = line.split_once('=') {
-            let key = key.trim();
-            let value = value.trim();
-            if value.parse::<i64>().is_err() && value.parse::<f64>().is_ok() {
-                warn!(
-                    "Suspicious value in [{}] {} = \"{}\" (float where integer may be expected)",
-                    section, key, value
-                );
-            } else if !value.is_empty()
-                && value.parse::<f64>().is_err()
-                && value.chars().any(|c| c.is_ascii_digit())
-                && !value
-                    .chars()
-                    .all(|c| c.is_alphanumeric() || matches!(c, '-' | '_' | '.' | ';' | '/'))
-            {
-                warn!(
-                    "Suspicious value in [{}] {} = \"{}\" (contains digits but not a valid number)",
-                    section, key, value
-                );
-            }
-        }
-    }
-}
-
 pub fn parse_ini_string(content: &str) -> Result<SiegeSettings> {
-    serde_ini::from_str(content).map_err(|err| {
-        diagnose_ini_content(content);
-        anyhow!("Failed to parse ini '{:#}'", err)
-    })
+    serde_ini::from_str(content).map_err(|err| anyhow!("Failed to parse ini '{:#}'", err))
 }
 
 pub fn serialize_ini_string(settings: &SiegeSettings) -> Result<String> {
