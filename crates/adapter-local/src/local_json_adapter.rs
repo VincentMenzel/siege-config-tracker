@@ -113,17 +113,18 @@ impl HistoryAdapter for LocalJsonStorage {
         Ok(results)
     }
 
-    fn get_previous_snapshot(&self) -> Option<SiegeSettings> {
-        let snapshot_dir = self.get_save_file_dir().ok()?;
+    fn get_previous_snapshot(&self) -> Result<SiegeSettings> {
+        let snapshot_dir = self.get_save_file_dir()?;
 
         let mut timestamps: Vec<u64> = fs::read_dir(snapshot_dir)
-            .ok()?
+            .ok()
+            .context("Failed to read snapshot dir")?
             .flatten()
             .filter_map(|entry| self.parse_timestamp_from_filename(entry.file_name()).ok())
             .collect();
         timestamps.sort_unstable();
 
-        let latest = timestamps.pop()?.to_string();
-        self.get_snapshot(&latest).ok()
+        let latest = timestamps.pop().context("No latest snapshot")?.to_string();
+        self.get_snapshot(&latest)
     }
 }

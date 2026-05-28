@@ -27,12 +27,9 @@ fn on_modified<H: HistoryAdapter>(path: &Path, history_adapter: &H) -> Result<()
 
     info!("Parsing new ini file");
     let current_settings = parse_path(path)?;
-    let previous_settings = history_adapter.get_previous_snapshot();
-
-    info!("Saving Snapshot");
     history_adapter.save_snapshot(&current_settings)?;
 
-    if let Some(previous) = previous_settings {
+    if let Some(previous) = history_adapter.get_previous_snapshot().ok() {
         info!("Preview diff");
         diff::diff_settings(&current_settings, &previous)?;
     } else {
