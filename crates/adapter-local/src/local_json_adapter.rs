@@ -7,6 +7,7 @@ use std::{
 
 use anyhow::{Context, Ok, Result, anyhow};
 use directories::ProjectDirs;
+use log::info;
 use tracker_core::{parser::SiegeSettings, storage::HistoryAdapter};
 
 pub struct LocalJsonStorage {}
@@ -71,13 +72,10 @@ impl HistoryAdapter for LocalJsonStorage {
 
         let file = File::create(&path)
             .map_err(|err| anyhow!("Failed to create file at {} - '{}'", path.display(), err))?;
+
         serde_json::to_writer_pretty(file, settings).context("Failed to write config")?;
 
-        if let Some(path_str) = path.to_str() {
-            println!("Created snapshot {}", path_str);
-        } else {
-            println!("failed to get path str ");
-        }
+        info!("Created snapshot {}", path.display());
 
         Ok(id)
     }

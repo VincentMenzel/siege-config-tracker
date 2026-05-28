@@ -100,8 +100,8 @@ pub fn parse_ini_string(content: &str) -> Result<SiegeSettings> {
     })
 }
 
-pub fn serialize_ini_string(settings: &SiegeSettings) -> Result<String, String> {
-    serde_ini::to_string(settings).map_err(|e| format!("Failed to serialize ini: {}", e))
+pub fn serialize_ini_string(settings: &SiegeSettings) -> Result<String> {
+    serde_ini::to_string(settings).map_err(|e| anyhow!("Failed to serialize ini: {}", e))
 }
 
 #[cfg(test)]

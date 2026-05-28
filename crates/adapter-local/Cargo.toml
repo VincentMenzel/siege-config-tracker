@@ -8,3 +8,4 @@ tracker-core = { path = "../tracker-core" }
 anyhow = "1"
 directories = "6.0.0"
 serde_json = "1.0.150"
+log = "0.4.30"
