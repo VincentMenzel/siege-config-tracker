@@ -96,7 +96,6 @@ impl HistoryAdapter for LocalJsonStorage {
 
     fn list_snapshots(&self) -> Result<Vec<SiegeSettings>> {
         let dir = self.get_save_file_dir()?;
-        fs::create_dir_all(&dir).context("Failed to create snapshot directory")?;
 
         let mut results = Vec::new();
         for entry in fs::read_dir(&dir).context("Failed to read snapshot directory")? {
