@@ -10,6 +10,7 @@ use directories::ProjectDirs;
 use log::info;
 use tracker_core::{parser::SiegeSettings, storage::HistoryAdapter};
 
+#[derive(Default)]
 pub struct LocalJsonStorage {}
 
 impl LocalJsonStorage {
@@ -17,7 +18,7 @@ impl LocalJsonStorage {
     const APPLICATION_NAME: &'static str = "siege-config-tracker";
 
     pub fn new() -> Self {
-        LocalJsonStorage {}
+        LocalJsonStorage::default()
     }
 
     fn get_save_file_dir(&self) -> Result<PathBuf> {
