@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, anyhow};
 use log::{error, info};
 use notify::{Config, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use std::path::Path;
@@ -9,7 +9,6 @@ use crate::directory::GAME_SETTINGS_FILE;
 pub struct WatcherHandle {
     _stop_tx: crossbeam_channel::Sender<()>,
 }
-
 
 pub fn watch_directory<F, T>(dir_path: &Path, on_modified: F) -> Result<WatcherHandle>
 where
@@ -23,7 +22,7 @@ where
         .context("Failed to get RecommendedWatcher")?;
     watcher
         .watch(dir_path, RecursiveMode::Recursive)
-        .context(format!("Failed to start watching {:?}", dir_path))?;
+        .context(anyhow!("Failed to start watching {:?}", dir_path))?;
 
     thread::spawn(move || {
         let _watcher = watcher;
