@@ -52,7 +52,7 @@ pub struct SiegeSettings {
 pub fn parse_path(path: &Path) -> Result<SiegeSettings> {
     let init_content = fs::read_to_string(path).context("Failed to read init File")?;
     let normalized = init_content.replace('\r', "");
-    return parse_ini_string(&normalized);
+    parse_ini_string(&normalized)
 }
 
 pub fn parse_ini_string(content: &str) -> Result<SiegeSettings> {
